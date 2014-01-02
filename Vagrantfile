@@ -2,6 +2,8 @@
 
 box = ENV['VAGRANT_BOX'] || 'opscode_ubuntu-12.04_provisionerless'
 Vagrant.configure('2') do |config|
+  config.omnibus.chef_version = :latest
+  config.berkshelf.enabled = true
   config.vm.hostname = 'zookeeper'
   config.vm.box = box
   config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/#{box}.box"
