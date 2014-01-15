@@ -24,8 +24,15 @@ default[:exhibitor][:opts][:hostname] =  node[:ipaddress]
 default[:exhibitor][:opts][:defaultconfig] = "#{Chef::Config[:file_cache_path]}/defaultconfig.exhibitor"
 
 default[:exhibitor][:opts][:configtype] = "file"
-#s3, shared file system, or separate ZK cluster
-default[:exhibitor][:opts][:fsconfigdir] = "/vagrant/zktest"
+
+# For --configtype s3, set:
+# [:exhibitor][:s3key] = "key"
+# [:exhibitor][:s3secret] = "secret"
+# [:exhibitor][:opts][:s3config] = "bucket:config-key"
+# [:exhibitor][:opts][:s3region] = "region" # i.e. us-east-1
+
+# For --contiftype file
+default[:exhibitor][:opts][:fsconfigdir] = "/tmp"
 
 default[:exhibitor][:defaultconfig][:cleanup_period_ms] = 5 * 60 * 1000
 default[:exhibitor][:defaultconfig][:zookeeper_install_directory] = "#{node[:zookeeper][:install_dir]}/*"

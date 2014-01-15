@@ -66,6 +66,23 @@ template check_script do
     :localhost => node[:exhibitor][:opts][:hostname] )
 end
 
+if node[:exhibitor][:opts][:configtype] != "file"
+    node.default[:exhibitor][:opts].delete(:fsconfigdir)
+end
+
+if node[:exhibitor][:opts][:configtype] == 's3'
+  s3_creds = "#{Chef::Config[:file_cache_path]}/exhibitor.s3.properties"
+  node.default[:exhibitor][:opts][:s3credentials] = s3_creds
+  template s3_creds do
+    source "exhibitor.s3.properties.erb"
+    owner node[:zookeeper][:user]
+    mode "0440"
+    variables(
+      :s3key => node[:exhibitor][:s3key],
+      :s3secret => node[:exhibitor][:s3secret] )
+  end
+end
+
 template "/etc/init/exhibitor.conf" do
   source "exhibitor.upstart.conf.erb"
   owner "root"
