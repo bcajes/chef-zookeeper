@@ -8,17 +8,19 @@ Vagrant.configure('2') do |config|
   config.vm.box = box
   config.vm.box_url = "https://opscode-vm.s3.amazonaws.com/vagrant/#{box}.box"
   config.omnibus.chef_version = :latest
-  config.vm.network :forwarded_port, guest: 8080, host: 8080
-  config.vm.network :forwarded_port, guest: 2181, host: 2181
+  ['192.168.50.5', '192.168.50.4', '192.168.50.3'].each do |zknode|
+    config.vm.define zknode do |zookeeper|
+      zookeeper.vm.network :private_network, ip: zknode
+      zookeeper.vm.provision :shell do |shell|
+        shell.inline = 'test -f $1 || (sudo apt-get update -y && touch $1)'
+        shell.args = '/var/run/apt-get-update'
+      end
 
-  config.vm.provision :shell do |shell|
-    shell.inline = 'test -f $1 || (sudo apt-get update -y && touch $1)'
-    shell.args = '/var/run/apt-get-update'
-  end
-
-  config.vm.provision :chef_solo do |chef|
-    chef.run_list = [
-      'recipe[zookeeper::default]'
-    ]
+      zookeeper.vm.provision :chef_solo do |chef|
+        chef.run_list = [
+                         'recipe[zookeeper::default]'
+                        ]
+      end
+    end
   end
 end
